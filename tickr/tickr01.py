@@ -5,10 +5,12 @@ import cb
 import sound
 import time
 import struct
+from logfiler import Logfiler
 
 class HeartRateManager (object):
     def __init__(self):
         self.peripheral = None
+        self.log = Logfiler('tickr')
 
     def did_discover_peripheral(self, p):
         print p.name
@@ -46,6 +48,7 @@ class HeartRateManager (object):
         heart_rate = struct.unpack('<B', c.value[1])[0]
         #self.values.append(heart_rate)
         print 'Heart rate: %i' % heart_rate
+        self.log.annotate('%d' % heart_rate)
 
 mngr = HeartRateManager()
 cb.set_central_delegate(mngr)
