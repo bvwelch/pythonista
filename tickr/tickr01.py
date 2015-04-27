@@ -51,6 +51,7 @@ class HeartRateManager (object):
         self.log.annotate('%d' % heart_rate)
 
 mngr = HeartRateManager()
+cb.set_verbose(True)
 cb.set_central_delegate(mngr)
 print 'Scanning for peripherals...'
 cb.scan_for_peripherals()
