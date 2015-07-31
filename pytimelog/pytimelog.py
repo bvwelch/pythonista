@@ -1,9 +1,14 @@
 
 # wdw 30 july '15.
 
+# FIXME use neat python date/time routines
+
+# FIXME what is the purpose of 'delta' in calc_ovr???
+
 # translation of time.c, for the lx95/100, from 1994 !
 
 from collections import deque
+import time
 
 NLIST = 100
 HEIGHT = 11
@@ -17,7 +22,7 @@ class Timelog(object):
         self.yrtotal    = 0
         self.wktotal    = 0
         self.daytotal   = 0
-        self.start_time = 0
+        self.start_time = self.get_time()
         self.working    = 0
 
     def load_file(self, fname):
@@ -25,7 +30,7 @@ class Timelog(object):
             fd = open(fname, 'r')
         except:
             print "can't open file"
-            return
+            return -1
         for line in fd:
             line = line.strip()
             if line:
@@ -45,19 +50,21 @@ class Timelog(object):
                        p4 = int(line[4], 16)
                        p5 = int(line[5])
                     except:
-                        return
+                        print "error parsing V line", line
+                        return -1
                     self.yrtotal    = p1
                     self.wktotal    = p2
                     self.daytotal   = p3
                     self.start_time = p4
                     self.working    = p5
+        return 0
 
     def save_file(self, fname):
         try:
             fd = open(fname, 'a')
         except:
             print "can't open file"
-            return
+            return -1
         vline = "V %x %x %x %x %d" % (self.yrtotal, self.wktotal, self.daytotal, 
                 self.start_time, self.working)
         self.add_item(vline, True)
@@ -66,6 +73,7 @@ class Timelog(object):
             if item[1]:
                 fd.write(item[0] + '\n')
         self.changed = False
+        return 0
 
     def add_item(self, line, is_new):
         while len(self.timelist) >= NLIST:
@@ -77,8 +85,59 @@ class Timelog(object):
         if is_new:
             self.changed = True
 
+    def do_start_stop(self):
+        cur_time = self.get_time()
+        delta = cur_time - self.start_time
+
+        if self.working:
+            self.wktotal += delta
+            self.daytotal += delta
+            self.yrtotal += self.calc_ovr(self.wktotal, delta)
+            head = "E"
+            self.working = 0
+        else:
+            head = "B"
+            self.working = 1
+
+        self.start_time = cur_time
+        hr = delta / 3600
+        min = (delta % 3600) / 60
+        sec = delta % 60
+        if (sec >= 30):
+            min += 1
+        if (min >= 60):
+            hr += 1
+        min %= 60
+
+        # note: "working" has been toggled above
+        if self.working:
+            line = "%s            %s, %02d:%02d" % (head, self.get_date_time_str(), hr, min)
+        else:
+            line = "%s         %s, %02d:%02d"    % (head, self.get_date_time_str(), hr, min)
+        self.add_item(line, True)
+
+    def get_time(self):
+        t = time.time()
+        return int(t) # seconds since 1970?
+
+    # the formula for overtime is: overtime = hrs > 40/wk
+    def calc_ovr(self, wtot, delta ):
+        ovr = 0
+        if (wtot > 40*3600):
+            ovr = wtot - 40*3600
+        if (ovr > delta):
+            ovr = delta
+        return ovr
+
+    def get_date_time_str(self):
+        return time.ctime()
+
 if __name__ == '__main__':
     t = Timelog()
     t.load_file('test01.log')
+    t.do_start_stop()
+    time.sleep(10)
+    t.do_start_stop()
+    time.sleep(10)
     t.save_file('test01.log')
 
