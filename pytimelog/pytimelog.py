@@ -3,10 +3,6 @@
 
 # translation of time.c, for the lx95/100, from 1994 !
 
-# wanted: an example, existing data file...
-
-# why are the V lines a mix of hex and decimal ???
-
 from collections import deque
 
 NLIST = 100
@@ -38,7 +34,7 @@ class Timelog(object):
                 self.add_item(" ", False)   # FIXME: are blank lines useful?
         fd.close()
         self.changed = False
-        for item in self.timelist():
+        for item in self.timelist:
             line = item[0].split()
             if len(line) == 6:
                 if line[0] == 'V':
@@ -66,7 +62,7 @@ class Timelog(object):
                 self.start_time, self.working)
         self.add_item(vline, True)
         self.add_item(" ", True)    # FIXME are blank lines useful?
-        for item in self.timelist():
+        for item in self.timelist:
             if item[1]:
                 fd.write(item[0] + '\n')
         self.changed = False
@@ -83,5 +79,6 @@ class Timelog(object):
 
 if __name__ == '__main__':
     t = Timelog()
-
+    t.load_file('test01.log')
+    t.save_file('test01.log')
 
