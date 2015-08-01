@@ -114,6 +114,48 @@ class Timelog(object):
             line = "%s         %s, %02d:%02d"    % (head, self.get_date_time_str(), hr, min)
         self.add_item(line, True)
 
+    def do_new_week(self):
+        if self.working:
+            print "Sorry, you must do a STOP first"
+            return -1
+        hr = self.wktotal / 3600
+        min = (self.wktotal % 3600) / 60
+        sec = self.wktotal % 60
+        if (sec >= 30):
+            min += 1
+        if (min >= 60):
+            hr += 1
+        min %= 60
+        s = self.get_date_str()
+        line = "WT %02d:%02d, %s" % ( hr, min, s)
+        self.add_item(line, True)
+        self.add_item(" ", True)
+        self.wktotal = 0
+        return 0
+
+    def do_new_day(self):
+        if self.working:
+            print "Sorry, you must do a STOP first"
+            return -1
+        hr = self.daytotal / 3600
+        min = (self.daytotal % 3600) / 60
+        sec = self.daytotal % 60
+        if (sec >= 30):
+            min += 1
+        if (min >= 60):
+            hr += 1
+        min %= 60
+        s = self.get_date_str()
+        line = "DT %02d:%02d, %s" % ( hr, min, s)
+        self.add_item(line, True)
+        self.add_item(" ", True)
+        self.daytotal = 0
+        return 0
+
+    def do_note(self, line):
+        if line:
+            self.add_item(line, True)
+
     def get_time(self):
         t = time.time()
         t =  int( round(t) ) # seconds since 1970
