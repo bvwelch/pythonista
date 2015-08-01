@@ -1,14 +1,12 @@
 
 # wdw 30 july '15.
 
-# FIXME use neat python date/time routines
-
 # FIXME what is the purpose of 'delta' in calc_ovr???
 
 # translation of time.c, for the lx95/100, from 1994 !
 
 from collections import deque
-import time
+import time, datetime
 
 NLIST = 100
 HEIGHT = 11
@@ -118,26 +116,31 @@ class Timelog(object):
 
     def get_time(self):
         t = time.time()
-        return int(t) # seconds since 1970?
+        t =  int( round(t) ) # seconds since 1970
+        return t
 
     # the formula for overtime is: overtime = hrs > 40/wk
-    def calc_ovr(self, wtot, delta ):
+    def calc_ovr(self, wktot, delta ):
         ovr = 0
-        if (wtot > 40*3600):
-            ovr = wtot - 40*3600
+        if (wktot > 40*3600):
+            ovr = wktot - 40*3600
         if (ovr > delta):
             ovr = delta
         return ovr
 
     def get_date_time_str(self):
-        return time.ctime()
+        t = datetime.datetime.now()
+        s = t.strftime("%m/%d/%y %H:%M:%S")
+        return s
 
 if __name__ == '__main__':
     t = Timelog()
     t.load_file('test01.log')
+    time.sleep(5)
     t.do_start_stop()
-    time.sleep(10)
+    time.sleep(65)
     t.do_start_stop()
-    time.sleep(10)
+    time.sleep(115)
+    t.do_start_stop()
     t.save_file('test01.log')
 
