@@ -34,7 +34,7 @@ class Timelog(object):
             if line:
                 self.add_item(line, False)
             else:
-                self.add_item(" ", False)   # FIXME: are blank lines useful?
+                self.add_item(" ", False)
         fd.close()
         self.changed = False
         for item in self.timelist:
@@ -66,7 +66,7 @@ class Timelog(object):
         vline = "V %x %x %x %x %d" % (self.yrtotal, self.wktotal, self.daytotal, 
                 self.start_time, self.working)
         self.add_item(vline, True)
-        self.add_item(" ", True)    # FIXME are blank lines useful?
+        self.add_item(" ", True)
         for item in self.timelist:
             if item[1]:
                 fd.write(item[0] + '\n')
@@ -156,6 +156,121 @@ class Timelog(object):
         if line:
             self.add_item(line, True)
 
+    def get_ovr_settings(self):
+        hr = self.yrtotal / 3600
+        min = (self.yrtotal % 3600) / 60
+        sec = self.yrtotal % 60
+        if (sec >= 30):
+            min += 1
+        if (min >= 60):
+            hr += 1
+        min %= 60
+        return [ hr, min ]
+
+    def put_ovr_settings(self, hr, min):
+        if self.working:
+            print "Sorry, you must do a STOP first"
+            return -1
+        self.yrtotal = (hr * 3600) + (min * 60)
+        line = "; Changed overtime to %lx" % self.yrtotal
+        self.add_item(line, True)
+        return 0
+
+    def get_weekly_settings(self):
+        hr = self.wktotal / 3600
+        min = (self.wktotal % 3600) / 60
+        sec = self.wktotal % 60
+        if (sec >= 30):
+            min += 1
+        if (min >= 60):
+            hr += 1
+        min %= 60
+        return [ hr, min ]
+
+    def put_weekly_settings(self, hr, min):
+        if self.working:
+            print "Sorry, you must do a STOP first"
+            return -1
+        self.wktotal = (hr * 3600) + (min * 60)
+        line = "; Changed weekly total to %lx" % self.wktotal
+        self.add_item(line, True)
+        return 0
+
+    def get_daily_settings(self):
+        hr = self.daytotal / 3600
+        min = (self.daytotal % 3600) / 60
+        sec = self.daytotal % 60
+        if (sec >= 30):
+            min += 1
+        if (min >= 60):
+            hr += 1
+        min %= 60
+        return [hr, min]
+
+    def put_daily_settings(self, hr, min):
+        if self.working:
+            print "Sorry, you must do a STOP first"
+            return -1
+        self.daytotal = (hr * 3600) + (min * 60)
+        line = "; Changed daily total to %lx" % self.daytotal
+        self.add_item(line, True)
+        return 0
+
+    def do_advboth_settings(self, hr, min):
+        if self.working:
+            print "Sorry, you must do a STOP first"
+            return -1
+        self.wktotal += (hr * 3600) + (min * 60)
+        self.daytotal += (hr * 3600) + (min * 60)
+        line = "; Advanced both %d:%02d" % (hr, min)
+        self.add_item(line, True)
+        return 0
+
+    def do_bckboth_settings(self, hr, min):
+        if self.working:
+            print "Sorry, you must do a STOP first"
+            return -1
+        self.wktotal -= (hr * 3600) + (min * 60)
+        self.daytotal -= (hr * 3600) + (min * 60)
+        line = "; Backup both %d:%02d" % (hr, min)
+        self.add_item(line, True)
+        return 0
+
+    def do_vline(self):
+        item = self.timelist[curline]
+        line = item[0].split()
+        if len(line) == 6:
+            if line[0] == 'V':
+                try:
+                   xyrtotal  = int(line[1], 16) # sscanf ?
+                   xwktotal  = int(line[2], 16)
+                   xdaytotal = int(line[3], 16)
+                   stime     = int(line[4], 16)
+                   xworking  = int(line[5])
+                except:
+                    return "error parsing V line: %s" % line
+
+        yhr = xyrtotal / 3600
+        ymin = (xyrtotal % 3600) / 60
+        if (ymin >= 60):
+            yhr += 1
+        ymin %= 60
+
+        whr = xwktotal / 3600
+        wmin = (xwktotal % 3600) / 60
+        if (wmin >= 60):
+            whr += 1
+        wmin %= 60
+
+        dhr = xdaytotal / 3600
+        dmin = (xdaytotal % 3600) / 60
+        if (dmin >= 60L):
+            dhr += 1
+        dmin %= 60
+
+        line = "OVR: %d:%02d WK: %d:%02d DAY: %d:%02d" % (yhr, ymin, whr, wmin, dhr, dmin)
+        return line
+        
     def get_time(self):
         t = time.time()
         t =  int( round(t) ) # seconds since 1970
