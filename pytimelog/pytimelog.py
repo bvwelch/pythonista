@@ -236,7 +236,7 @@ class Timelog(object):
         self.add_item(line, True)
         return 0
 
-    def do_vline(self):
+    def do_parse_vline(self):
         item = self.timelist[curline]
         line = item[0].split()
         if len(line) == 6:
