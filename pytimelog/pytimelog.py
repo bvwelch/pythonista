@@ -5,16 +5,17 @@
 
 # translation of time.c, for the lx95/100, from 1994 !
 
+VERSION = "Time V0.1"
+
 from collections import deque
 import time, datetime
 
-NLIST = 100
-HEIGHT = 11
-
 class Timelog(object):
-    def __init__(self):
+    def __init__(self, nlmax, numrows):
         self.changed    = False
         self.timelist   = deque()
+        self.nlistmax   = nlmax
+        self.height     = numrows
         self.nlist      = 0
         self.curline    = 0
         self.yrtotal    = 0
@@ -74,14 +75,59 @@ class Timelog(object):
         return 0
 
     def add_item(self, line, is_new):
-        while len(self.timelist) >= NLIST:
+        while len(self.timelist) >= self.nlistmax:
             self.timelist.popleft()
         self.timelist.append( [line, is_new] )
         self.nlist = len(self.timelist)
-        if self.nlist > HEIGHT:
-            self.curline = self.nlist - HEIGHT
+        if self.nlist > self.height:
+            self.curline = self.nlist - self.height
         if is_new:
             self.changed = True
+
+    def heading(self):
+        delta = self.get_time() - self.start_time
+        if self.working:
+            head = "WRK"
+            wkt = self.wktotal + delta
+            dt = self.daytotal + delta
+            yrt = self.yrtotal + self.calc_ovr(wkt, delta)
+        else:
+            head = "BRK"
+            yrt = self.yrtotal
+            wkt = self.wktotal
+            dt = self.daytotal
+
+        wmin = (wkt % 3600) / 60
+        wmin %= 60L
+
+        dhr = dt / 3600
+        dmin = (dt % 3600) / 60
+        dsec = dt % 60
+        if dsec >= 30:
+            dmin += 1
+        if dmin >= 60:
+            dhr += 1
+        dmin %= 60
+
+        bhr = delta / 3600
+        bmin = (delta % 3600) / 60
+        bsec = delta % 60
+        if bsec >= 30:
+            bmin += 1
+        if bmin >= 60:
+            bhr += 1
+        bmin %= 60
+
+        togo = wkt / 28800
+        togo *= 28800
+        togo = wkt - togo
+        togo = 28800 - togo
+        tghr = togo / 3600
+        tgmin = (togo % 3600) / 60
+
+        line1 = "%s   %2d:%02d" % ( VERSION, tghr,  tgmin)
+        line2 = "OVR:%3d WK: %2d:%02d DAY: %02d:%02d %s: %02d:%02d" % ( yrt/3600, wkt/3600, wmin, dhr,dmin, head, bhr,bmin)
+        return [ line1, line2 ]
 
     def do_start_stop(self):
         cur_time = self.get_time()
@@ -290,8 +336,24 @@ class Timelog(object):
         s = t.strftime("%m/%d/%y %H:%M:%S")
         return s
 
+    def get_date_str(self):
+        t = datetime.datetime.now()
+        s = t.strftime("%m/%d/%y")
+        return s
+
+    def cursor_up(self):
+        if self.curline >= 1:
+            self.curline -= 1
+
+    def cursor_down(self):
+        if self.curline < (self.nlist - 1):
+            self.curline += 1
+
+NLIST = 100
+HEIGHT = 11
+
 if __name__ == '__main__':
-    t = Timelog()
+    t = Timelog(NLIST, HEIGHT)
     t.load_file('test01.log')
     time.sleep(5)
     t.do_start_stop()
