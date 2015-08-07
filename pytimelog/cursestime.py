@@ -77,6 +77,31 @@ def do_filemenu(t, w):
         fname = get_str(w, "save file as: ")
         t.save_file(fname)
 
+def do_settings(t, w):
+    c = msg(w, "1: Overtime, 2: Weekly, 3: Daily, 4:Both. ? ")
+    if (c < 256) and ( chr(c) == '1' ) :
+        hr, min = t.get_ovr_settings()
+        hr, min = get_hr_min(w, 'Overtime', hr, min)
+        t.put_ovr_settings(hr, min)
+    elif (c < 256) and ( chr(c) == '2' ) :
+        pass
+    elif (c < 256) and ( chr(c) == '3' ) :
+        pass
+    elif (c < 256) and ( chr(c) == '4' ) :
+        pass
+
+def get_hr_min(w, prompt, hr, min):
+    reply = get_str(w, '%s: %02d:%02d ? ' % (prompt, hr, min) )
+    reply = reply.strip()
+    reply = reply.split(':')
+    try:
+        p1 = int(reply[0])
+        p2 = int(reply[1])
+        return [p1, p2]
+    except:
+        msg(w, "error: expect hr:min")
+        return [hr, min]
+
 def do_note(t, w):
     line = get_str(w, "Note: ")
     t.do_note('; ' + line)
@@ -97,18 +122,16 @@ def get_str(w, prompt):
     return reply
 
 def msg(w, s):
+    w.nodelay(0)
     w.clear()
     curses.curs_set(1) # show cursor
     w.addstr(3, 1, s)
     w.refresh()
-    while True:
-        c = w.getch()
-        if c > 0:
-            break
-        time.sleep(.100) # FIXME
+    c = w.getch()
     w.clear()
     curses.curs_set(0) # hide cursor
     w.refresh()
+    w.nodelay(1)
     return c
 
 def main(w):
