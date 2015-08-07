@@ -84,9 +84,13 @@ def do_settings(t, w):
         hr, min = get_hr_min(w, 'Overtime', hr, min)
         t.put_ovr_settings(hr, min)
     elif (c < 256) and ( chr(c) == '2' ) :
-        pass
+        hr, min = t.get_weekly_settings()
+        hr, min = get_hr_min(w, 'Overtime', hr, min)
+        t.put_weekly_settings(hr, min)
     elif (c < 256) and ( chr(c) == '3' ) :
-        pass
+        hr, min = t.get_daily_settings()
+        hr, min = get_hr_min(w, 'Overtime', hr, min)
+        t.put_daily_settings(hr, min)
     elif (c < 256) and ( chr(c) == '4' ) :
         pass
 
