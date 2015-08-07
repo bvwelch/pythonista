@@ -43,6 +43,10 @@ def key_in(t, w, c):
             do_topmenu(w)
         elif (c < 256) and ( chr(c) in 'Qq' ) :
             return True
+        else:
+            print "???"
+            curses.beep()
+            time.sleep(1)
         return False
 
 def display(t, w):

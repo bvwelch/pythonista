@@ -29,6 +29,7 @@ class Timelog(object):
             fd = open(fname, 'r')
         except:
             print "can't open file"
+            time.sleep(2)
             return -1
         for line in fd:
             line = line.strip()
@@ -50,6 +51,7 @@ class Timelog(object):
                        p5 = int(line[5])
                     except:
                         print "error parsing V line", line
+                        time.sleep(2)
                         return -1
                     self.yrtotal    = p1
                     self.wktotal    = p2
@@ -63,6 +65,7 @@ class Timelog(object):
             fd = open(fname, 'a')
         except:
             print "can't open file"
+            time.sleep(2)
             return -1
         vline = "V %x %x %x %x %d" % (self.yrtotal, self.wktotal, self.daytotal, 
                 self.start_time, self.working)
@@ -164,6 +167,7 @@ class Timelog(object):
     def do_new_week(self):
         if self.working:
             print "Sorry, you must do a STOP first"
+            time.sleep(2)
             return -1
         hr = self.wktotal / 3600
         min = (self.wktotal % 3600) / 60
@@ -183,6 +187,7 @@ class Timelog(object):
     def do_new_day(self):
         if self.working:
             print "Sorry, you must do a STOP first"
+            time.sleep(2)
             return -1
         hr = self.daytotal / 3600
         min = (self.daytotal % 3600) / 60
@@ -217,6 +222,7 @@ class Timelog(object):
     def put_ovr_settings(self, hr, min):
         if self.working:
             print "Sorry, you must do a STOP first"
+            time.sleep(2)
             return -1
         self.yrtotal = (hr * 3600) + (min * 60)
         line = "; Changed overtime to %lx" % self.yrtotal
@@ -237,6 +243,7 @@ class Timelog(object):
     def put_weekly_settings(self, hr, min):
         if self.working:
             print "Sorry, you must do a STOP first"
+            time.sleep(2)
             return -1
         self.wktotal = (hr * 3600) + (min * 60)
         line = "; Changed weekly total to %lx" % self.wktotal
@@ -257,6 +264,7 @@ class Timelog(object):
     def put_daily_settings(self, hr, min):
         if self.working:
             print "Sorry, you must do a STOP first"
+            time.sleep(2)
             return -1
         self.daytotal = (hr * 3600) + (min * 60)
         line = "; Changed daily total to %lx" % self.daytotal
@@ -266,6 +274,7 @@ class Timelog(object):
     def do_advboth_settings(self, hr, min):
         if self.working:
             print "Sorry, you must do a STOP first"
+            time.sleep(2)
             return -1
         self.wktotal += (hr * 3600) + (min * 60)
         self.daytotal += (hr * 3600) + (min * 60)
@@ -276,6 +285,7 @@ class Timelog(object):
     def do_bckboth_settings(self, hr, min):
         if self.working:
             print "Sorry, you must do a STOP first"
+            time.sleep(2)
             return -1
         self.wktotal -= (hr * 3600) + (min * 60)
         self.daytotal -= (hr * 3600) + (min * 60)
