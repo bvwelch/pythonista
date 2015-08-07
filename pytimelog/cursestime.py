@@ -61,6 +61,10 @@ def display(t, w):
             line = '%d %d %s' % (t.curline, t.nlist, line)
             w.addstr(i+3, 1, ': ' + line)
 
+    line = "q: quit, m: menu, F2: note, F4: new week, F6: new day, F8: start/stop"
+    w.addstr(i+4, 1, '  ' + line)
+    w.addstr(i+5, 1, '  ')
+
 def main(w):
     w.nodelay(1)
     t = Timelog(NLIST, HEIGHT)
