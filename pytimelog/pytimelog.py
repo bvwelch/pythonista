@@ -26,6 +26,8 @@ class Timelog(object):
         self.fname      = "mytime.log"
 
     def load_file(self, fname):
+        if not fname:
+            fname = self.fname
         try:
             fd = open(fname, 'r')
             self.fname = fname
