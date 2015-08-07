@@ -11,11 +11,12 @@ import curses, time
 from pytimelog import Timelog
 
 def do_topmenu(t, w):
-    print "hey there"
+    w.clear(); w.refresh()
+    curses.curs_set(1) # show cursor
+    w.addstr(20, 1, "1: file, 2: settings, 3: Parse, 4: Quit.? ")
+    w.refresh()
     time.sleep(1)
-    #w.clear()
-    #w.addstr(20, 1, "1: file, 2: settings, 3: Parse, 4: Quit.? ")
-    time.sleep(1)
+    curses.curs_set(0) # hide cursor
 
 def do_note(t, w):
     print "do note: fixme"
@@ -43,9 +44,9 @@ def key_in(t, w, c):
         elif c == curses.KEY_END:
             t.cursor_end()
         elif (c < 256) and ( chr(c) in 'Mm' ) :
-            print "mmm???"
-            curses.beep()
-            time.sleep(1)
+            #print "mmm???"
+            #curses.beep()
+            #time.sleep(1)
             do_topmenu(t, w)
         elif (c < 256) and ( chr(c) in 'Qq' ) :
             return True
@@ -56,7 +57,7 @@ def key_in(t, w, c):
         return False
 
 def display(t, w):
-    w.clear()
+    w.clear(); w.refresh()
     curses.curs_set(0) # hide cursor
     head1, head2 = t.heading()
     w.addstr(0, 1, head1)
