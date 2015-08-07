@@ -10,6 +10,21 @@ HEIGHT = 11
 import curses, time
 from pytimelog import Timelog
 
+def get_str(w, prompt):
+    w.nodelay(0)
+    curses.echo()
+    w.clear()
+    curses.curs_set(1) # show cursor
+    w.addstr(3, 1, prompt)
+    w.refresh()
+    reply = w.getstr()
+    w.clear()
+    curses.curs_set(0) # hide cursor
+    w.refresh()
+    w.nodelay(1)
+    curses.noecho()
+    return reply
+
 def msg(w, s):
     w.clear()
     curses.curs_set(1) # show cursor
@@ -34,6 +49,15 @@ def do_topmenu(t, w):
     elif (c < 256) and ( chr(c) == '3' ) :
         line = t.do_parse_vline()
         msg(w, line)
+
+def do_filemenu(t, w):
+    c = msg(w, "1: open, 2: save. ? ")
+    if (c < 256) and ( chr(c) == '1' ) :
+        fname = get_str(w, "file to open: ")
+        t.load_file(fname)
+    elif (c < 256) and ( chr(c) == '2' ) :
+        fname = get_str(w, "save file as: ")
+        t.save_file(fname)
 
 def do_note(t, w):
     print "do note: fixme"
@@ -90,7 +114,7 @@ def display(t, w):
 def main(w):
     w.nodelay(1)
     t = Timelog(NLIST, HEIGHT)
-    t.load_file('test01.log')
+    # t.load_file('test01.log')
     while True:
         display(t, w)
         c = w.getch()
@@ -101,7 +125,7 @@ def main(w):
             break;
 
     if t.changed:
-        t.save_file('test01.log')
+        t.save_file('')
 
 if __name__ == '__main__':
     curses.wrapper(main)

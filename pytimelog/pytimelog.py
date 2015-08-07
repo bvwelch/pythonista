@@ -23,10 +23,12 @@ class Timelog(object):
         self.daytotal   = 0
         self.start_time = self.get_time()
         self.working    = 0
+        self.fname      = "mytime.log"
 
     def load_file(self, fname):
         try:
             fd = open(fname, 'r')
+            self.fname = fname
         except:
             print "can't open file"
             time.sleep(2)
@@ -61,6 +63,8 @@ class Timelog(object):
         return 0
 
     def save_file(self, fname):
+        if not fname:
+            fname = self.fname
         try:
             fd = open(fname, 'a')
         except:
