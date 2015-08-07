@@ -75,6 +75,7 @@ class Timelog(object):
         return 0
 
     def add_item(self, line, is_new):
+        self.bounds_check()
         while len(self.timelist) >= self.nlistmax:
             self.timelist.popleft()
         self.timelist.append( [line, is_new] )
@@ -283,6 +284,7 @@ class Timelog(object):
         return 0
 
     def do_parse_vline(self):
+        self.bounds_check()
         item = self.timelist[curline]
         line = item[0].split()
         if len(line) == 6:
@@ -341,13 +343,35 @@ class Timelog(object):
         s = t.strftime("%m/%d/%y")
         return s
 
+    def cursor_home(self):
+        self.curline = 0
+
+    def cursor_end(self):
+        self.curline = self.nlist - 1
+
     def cursor_up(self):
         if self.curline >= 1:
             self.curline -= 1
 
     def cursor_down(self):
-        if self.curline < (self.nlist - 1):
-            self.curline += 1
+        self.curline += 1
+        self.bounds_check()
+
+    def cursor_page_up(self):
+        if self.curline >= self.height:
+            self.curline -= self.height
+        else:
+            self.curline = 0
+
+    def cursor_page_down(self):
+        self.curline += self.height
+        self.bounds_check()
+
+    def bounds_check(self):
+        if self.curline > (self.nlist - 1):
+            self.curline = self.nlist - 1
+        if self.nlist == 0:
+            self.curline = 0
 
 NLIST = 100
 HEIGHT = 11

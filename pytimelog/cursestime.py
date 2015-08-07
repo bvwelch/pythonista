@@ -7,22 +7,16 @@
 NLIST = 100
 HEIGHT = 11
 
-import curses
+import curses, time
 from pytimelog import Timelog
 
 def do_topmenu(w):
-    w.move(1, 0)
-    w.clrtoeol()
-    w.move(0, 0)
-    w.clrtoeol()
-    w.addstr(0, 5, "topmenu: fixme")
+    print "topmenu: fixme"
+    time.sleep(1)
 
 def do_note(w):
-    w.move(1, 0)
-    w.clrtoeol()
-    w.move(0, 0)
-    w.clrtoeol()
-    w.addstr(0, 5, "do_note: fixme")
+    print "do note: fixme"
+    time.sleep(1)
 
 def key_in(t, w, c):
         if c == curses.KEY_F2:
@@ -37,9 +31,17 @@ def key_in(t, w, c):
             t.cursor_up()
         elif c == curses.KEY_DOWN:
             t.cursor_down()
-        elif (c < 256) and chr(c) in 'Mm':
+        elif c == curses.KEY_NPAGE:
+            t.cursor_page_up()
+        elif c == curses.KEY_PPAGE:
+            t.cursor_page_down()
+        elif c == curses.KEY_HOME:
+            t.cursor_home()
+        elif c == curses.KEY_END:
+            t.cursor_end()
+        elif (c < 256) and ( chr(c) in 'Mm' ) :
             do_topmenu(w)
-        elif (c < 256) and chr(c) in 'Qq':
+        elif (c < 256) and ( chr(c) in 'Qq' ) :
             return True
         return False
 
@@ -52,14 +54,18 @@ def display(t, w):
         if (i + t.curline) < t.nlist:
             item = t.timelist[i]
             line = item[0]
-            w.addstr(i+3, 1, line)
+            w.addstr(i+3, 1, ': ' + line)
 
 def main(w):
+    w.nodelay(1)
     t = Timelog(NLIST, HEIGHT)
     t.load_file('test01.log')
     while True:
         display(t, w)
         c = w.getch()
+        if c < 0:
+            time.sleep(.100) # FIXME
+            continue
         if key_in(t, w, c):
             break;
 
