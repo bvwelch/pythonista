@@ -295,7 +295,7 @@ class Timelog(object):
 
     def do_parse_vline(self):
         self.bounds_check()
-        item = self.timelist[curline]
+        item = self.timelist[self.curline]
         line = item[0].split()
         if len(line) == 6:
             if line[0] == 'V':

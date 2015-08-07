@@ -10,13 +10,30 @@ HEIGHT = 11
 import curses, time
 from pytimelog import Timelog
 
-def do_topmenu(t, w):
-    w.clear(); w.refresh()
+def msg(w, s):
+    w.clear()
     curses.curs_set(1) # show cursor
-    w.addstr(20, 1, "1: file, 2: settings, 3: Parse, 4: Quit.? ")
+    w.addstr(3, 1, s)
     w.refresh()
-    time.sleep(1)
+    while True:
+        c = w.getch()
+        if c > 0:
+            break
+        time.sleep(.100) # FIXME
+    w.clear()
     curses.curs_set(0) # hide cursor
+    w.refresh()
+    return c
+
+def do_topmenu(t, w):
+    c = msg(w, "1: file, 2: settings, 3: Parse. ? ")
+    if (c < 256) and ( chr(c) == '1' ) :
+        do_filemenu(t, w)
+    elif (c < 256) and ( chr(c) == '2' ) :
+        do_settings(t, w)
+    elif (c < 256) and ( chr(c) == '3' ) :
+        line = t.do_parse_vline()
+        msg(w, line)
 
 def do_note(t, w):
     print "do note: fixme"
@@ -44,9 +61,6 @@ def key_in(t, w, c):
         elif c == curses.KEY_END:
             t.cursor_end()
         elif (c < 256) and ( chr(c) in 'Mm' ) :
-            #print "mmm???"
-            #curses.beep()
-            #time.sleep(1)
             do_topmenu(t, w)
         elif (c < 256) and ( chr(c) in 'Qq' ) :
             return True
