@@ -52,8 +52,9 @@ def display(t, w):
     w.addstr(1, 1, head2)
     for i in range(HEIGHT):
         if (i + t.curline) < t.nlist:
-            item = t.timelist[i]
+            item = t.timelist[ i + t.curline ]
             line = item[0]
+            line = '%d %d %s' % (t.curline, t.nlist, line)
             w.addstr(i+3, 1, ': ' + line)
 
 def main(w):
