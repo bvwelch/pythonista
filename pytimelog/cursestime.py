@@ -10,17 +10,20 @@ HEIGHT = 11
 import curses, time
 from pytimelog import Timelog
 
-def do_topmenu(w):
-    print "topmenu: fixme"
+def do_topmenu(t, w):
+    print "hey there"
+    time.sleep(1)
+    #w.clear()
+    #w.addstr(20, 1, "1: file, 2: settings, 3: Parse, 4: Quit.? ")
     time.sleep(1)
 
-def do_note(w):
+def do_note(t, w):
     print "do note: fixme"
     time.sleep(1)
 
 def key_in(t, w, c):
         if c == curses.KEY_F2:
-            do_note(w)
+            do_note(t, w)
         elif c == curses.KEY_F4:
             t.do_new_week()
         elif c == curses.KEY_F6:
@@ -40,7 +43,10 @@ def key_in(t, w, c):
         elif c == curses.KEY_END:
             t.cursor_end()
         elif (c < 256) and ( chr(c) in 'Mm' ) :
-            do_topmenu(w)
+            print "mmm???"
+            curses.beep()
+            time.sleep(1)
+            do_topmenu(t, w)
         elif (c < 256) and ( chr(c) in 'Qq' ) :
             return True
         else:
@@ -51,6 +57,7 @@ def key_in(t, w, c):
 
 def display(t, w):
     w.clear()
+    curses.curs_set(0) # hide cursor
     head1, head2 = t.heading()
     w.addstr(0, 1, head1)
     w.addstr(1, 1, head2)

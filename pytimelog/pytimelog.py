@@ -380,6 +380,8 @@ class Timelog(object):
     def bounds_check(self):
         if self.curline > (self.nlist - 1):
             self.curline = self.nlist - 1
+        if self.curline < 0:
+            self.curline = 0
         if self.nlist == 0:
             self.curline = 0
 
