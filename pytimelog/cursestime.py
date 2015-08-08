@@ -92,7 +92,13 @@ def do_settings(t, w):
         hr, min = get_hr_min(w, 'Overtime', hr, min)
         t.put_daily_settings(hr, min)
     elif (c < 256) and ( chr(c) == '4' ) :
-        pass
+        c = msg(w, "1: Advance, 2: Backup. ? ")
+        if (c < 256) and ( chr(c) == '1' ) :
+            hr, min = get_hr_min(w, 'Amount to advance', 0, 30)
+            t.do_advboth_settings(hr, min)
+        elif (c < 256) and ( chr(c) == '2' ) :
+            hr, min = get_hr_min(w, 'Amount to backup', 0, 30)
+            t.do_bckboth_settings(hr, min)
 
 def get_hr_min(w, prompt, hr, min):
     reply = get_str(w, '%s: %02d:%02d ? ' % (prompt, hr, min) )
