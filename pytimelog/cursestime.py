@@ -17,14 +17,15 @@ def display(t, w):
     w.addstr(0, 1, head1)
     w.addstr(1, 1, head2)
     for i in range(HEIGHT):
-        if (i + t.curline) < t.nlist:
-            item = t.timelist[ i + t.curline ]
+        n = i + t.curline
+        if n < t.nlist:
+            item = t.timelist[ n ]
             line = item[0]
-            line = '%d %d %s' % (t.curline, t.nlist, line)
-            w.addstr(i+3, 1, ': ' + line)
+            line = '%02d: %s' % (n, line)
+            w.addstr(i+3, 1, line)
 
-    line = "q: quit, m: menu, F2: note, F4: new week, F6: new day, F8: start/stop"
-    w.addstr(i+4, 1, '  ' + line)
+    line = " q: quit, m: menu, F2: note, F4: new week, F6: new day, F8: start/stop"
+    w.addstr(i+4, 1,  line)
     w.addstr(i+5, 1, '  ')
 
 def key_in(t, w, c):
@@ -41,9 +42,9 @@ def key_in(t, w, c):
         elif c == curses.KEY_DOWN:
             t.cursor_down()
         elif c == curses.KEY_NPAGE:
-            t.cursor_page_up()
-        elif c == curses.KEY_PPAGE:
             t.cursor_page_down()
+        elif c == curses.KEY_PPAGE:
+            t.cursor_page_up()
         elif c == curses.KEY_HOME:
             t.cursor_home()
         elif c == curses.KEY_END:
