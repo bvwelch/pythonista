@@ -102,6 +102,8 @@ def do_settings(t, w):
 
 def get_hr_min(w, prompt, hr, min):
     reply = get_str(w, '%s: %02d:%02d ? ' % (prompt, hr, min) )
+    if not reply:
+        return [hr, min]
     reply = reply.strip()
     reply = reply.split(':')
     try:
